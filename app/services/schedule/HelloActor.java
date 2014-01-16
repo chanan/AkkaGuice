@@ -11,7 +11,7 @@ public class HelloActor extends UntypedActor {
 
 	@Override
 	public void onReceive(Object arg0) throws Exception {
-		Logger.info("Hello from more package");
+		Logger.info("Hello from more package every 2 seconds");
 	}
 
 }

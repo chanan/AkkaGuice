@@ -6,7 +6,6 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class Global extends GlobalSettings {
-	//private final Injector injector = AkkaGuice.Startup(Guice.createInjector(new GuiceModule()), "services");
 	private Injector injector = Guice.createInjector(new GuiceModule());
 
 	public <A> A getControllerInstance(Class<A> clazz) throws Exception {

@@ -22,9 +22,4 @@ public class HelloActor extends UntypedActor {
 		final ActorRef perRequestActor = Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(PerRequestActor.class));
 		perRequestActor.tell("tick", getSelf());
 	}
-
-	@Override
-	public void preStart() throws Exception {
-		Logger.info("preStart");
-	}
 }
