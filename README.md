@@ -1,0 +1,4 @@
+AkkaGuice
+=========
+
+Akka Guice Integration
