@@ -1,5 +1,6 @@
 package controllers;
 
+import play.api.templates.Html;
 import play.mvc.Controller;
 import play.mvc.Result;
 import views.html.index;
@@ -10,6 +11,7 @@ import com.google.inject.name.Named;
 
 public class Application extends Controller {
 	private final ActorRef service;
+	private final Html html = index.render();
 	
 	@Inject
 	public Application(@Named("services.HelloActor") ActorRef service) {
@@ -18,6 +20,6 @@ public class Application extends Controller {
 	
     public Result index() {
     	service.tell("tick", null);
-        return ok(index.render("Your new application is ready."));
+        return ok(html);
     }
 }

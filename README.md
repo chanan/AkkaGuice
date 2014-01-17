@@ -88,7 +88,7 @@ In this case, the defaults of the annotation were used:
 Final Note
 ----------
 
-ActorRefs are registered in Guice as an instance. This means that when using the injection syntax, you will be getting the same ActorRef every time. If you need to get a new ActorRef such as when using the Actor Per Request pattern use the On Demand syntax. To see the difference in behaviour run the sample application browse to http://localhost:9000 (the default play screen will show) and refresh the page. In the console log you will see output similar to this:
+ActorRefs are registered in Guice as an instance. This means that when using the injection syntax, you will be getting the same ActorRef every time. If you need to get a new ActorRef such as when using the Actor Per Request pattern use the On Demand syntax. To see the difference in behaviour run the sample application browse to http://localhost:9000 (this page will be displayed) and refresh the page. In the console log you will see output similar to this:
 
 ```
 [info] application - Hello from actor: Actor[akka://application/user/$d#310401062]
