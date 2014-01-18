@@ -24,17 +24,18 @@ import com.google.inject.name.Names;
 
 class ActorScanner {
 	
-	public static void ScanForActors(Binder binder, String namespace) {
-		RegisterActors(binder, namespace);
-		ScheduleActors(namespace);
-		ScheduleOnceActors(namespace);
+	public static void ScanForActors(Binder binder, String... namespaces) {
+		RegisterActors(binder, namespaces);
+		ScheduleActors(namespaces);
+		ScheduleOnceActors(namespaces);
 	}
 	
-	private static void RegisterActors(Binder binder, String namespace) {
+	private static void RegisterActors(Binder binder, String... namespaces) {
 		Map<String, Class<? extends UntypedActor>> map = new HashMap<>();
 		
-		Reflections reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage(namespace))
-        .setScanners(new SubTypesScanner()));
+		ConfigurationBuilder configBuilder = build(namespaces);
+		
+		Reflections reflections = new Reflections(configBuilder.setScanners(new SubTypesScanner()));
 	
 		Set<Class<? extends UntypedActor>> actors = reflections.getSubTypesOf(UntypedActor.class);
 	
@@ -51,11 +52,19 @@ class ActorScanner {
 			binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toInstance(Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(actor)));
 		}
 	}
+
+	private static ConfigurationBuilder build(String... namespaces) {
+		ConfigurationBuilder configBuilder = new ConfigurationBuilder();
+		for(String namespace : namespaces) {
+			configBuilder.addUrls(ClasspathHelper.forPackage(namespace));
+		}
+		return configBuilder;
+	}
 	
 	@SuppressWarnings("unchecked")
-	private static void ScheduleActors(String namespace) {
-		Reflections reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage(namespace))
-		.setScanners(new TypeAnnotationsScanner()));
+	private static void ScheduleActors(String... namespaces) {
+		ConfigurationBuilder configBuilder = build(namespaces);
+		Reflections reflections = new Reflections(configBuilder.setScanners(new TypeAnnotationsScanner()));
 		
 		Set<Class<?>> schedules = reflections.getTypesAnnotatedWith(Schedule.class);
 		for(final Class<?> schedule : schedules) {
@@ -72,9 +81,9 @@ class ActorScanner {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static void ScheduleOnceActors(String namespace) {
-		Reflections reflections = new Reflections(new ConfigurationBuilder().setUrls(ClasspathHelper.forPackage(namespace))
-		.setScanners(new TypeAnnotationsScanner()));
+	private static void ScheduleOnceActors(String... namespaces) {
+		ConfigurationBuilder configBuilder = build(namespaces);
+		Reflections reflections = new Reflections(configBuilder.setScanners(new TypeAnnotationsScanner()));
 		
 		Set<Class<?>> schedules = reflections.getTypesAnnotatedWith(ScheduleOnce.class);
 		for(final Class<?> scheduleOnce : schedules) {
