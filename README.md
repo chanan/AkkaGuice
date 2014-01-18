@@ -4,7 +4,18 @@ Akka Guice Integration
 Installation
 ------------
 
-TBD - The project is not in Maven yet as it is still in prototype phase. For now it is added using the module syntax in build.sbt of the sample project.
+Add the following to your build.sbt:
+
+```java
+resolvers += "release repository" at "http://chanan.github.io/maven-repo/releases/"
+resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapshots/"
+```
+
+Add to your libraryDependencies:
+
+```java
+"akkaguice" % "akkaguice_2.10" % "0.1.0-SNAPSHOT
+```
 
 Initialization
 --------------

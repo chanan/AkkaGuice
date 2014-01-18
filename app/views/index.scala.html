@@ -2,7 +2,16 @@
 
 <h2>Installation</h2>
 
-<p>TBD - The project is not in Maven yet as it is still in prototype phase. For now it is added using the module syntax in build.sbt of the sample project.</p>
+<p>Add the following to your build.sbt:</p>
+<pre>
+resolvers += "release repository" at "http://chanan.github.io/maven-repo/releases/"
+resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapshots/"
+</pre>
+
+<p>Add to your libraryDependencies:</p>
+<pre>
+	"akkaguice" % "akkaguice_2.10" % "0.1.0-SNAPSHOT
+</pre>
 
 <h2>Initialization</h2>
 
