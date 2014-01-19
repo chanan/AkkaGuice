@@ -12,6 +12,7 @@ import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 
+import play.Logger;
 import play.libs.Akka;
 import scala.concurrent.duration.Duration;
 import akka.actor.Actor;
@@ -47,9 +48,11 @@ class ActorScanner {
 			}
 			else map.put(actor.getSimpleName(), actor);
 		}
+		if(map.size() > 0) Logger.debug("Registering actors: ");
 		for(final String key : map.keySet()) {
 			final Class<? extends UntypedActor> actor = map.get(key);
 			binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toInstance(Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(actor)));
+			Logger.debug(actor.getSimpleName() + " to: " + key);
 		}
 	}
 
@@ -67,6 +70,7 @@ class ActorScanner {
 		Reflections reflections = new Reflections(configBuilder.setScanners(new TypeAnnotationsScanner()));
 		
 		Set<Class<?>> schedules = reflections.getTypesAnnotatedWith(Schedule.class);
+		if(schedules.size() > 0) Logger.debug("Scheduling actors:");
 		for(final Class<?> schedule : schedules) {
 			final ActorRef actor = Akka.system().actorOf(GuiceProvider.get(Akka.system()).props((Class<? extends Actor>) schedule));
 			final Schedule annotation = schedule.getAnnotation(Schedule.class);
@@ -77,6 +81,7 @@ class ActorScanner {
 					"tick",
 					Akka.system().dispatcher(),
 					null);
+			Logger.debug(actor.getClass().getSimpleName() + " on delay: " + annotation.initialDelay() + " interval: " + annotation.interval() + " " + annotation.timeUnit());
 		}
 	}
 	
@@ -86,6 +91,7 @@ class ActorScanner {
 		Reflections reflections = new Reflections(configBuilder.setScanners(new TypeAnnotationsScanner()));
 		
 		Set<Class<?>> schedules = reflections.getTypesAnnotatedWith(ScheduleOnce.class);
+		if(schedules.size() > 0) Logger.debug("Scheduling actors once:");
 		for(final Class<?> scheduleOnce : schedules) {
 			final ActorRef actor = Akka.system().actorOf(GuiceProvider.get(Akka.system()).props((Class<? extends Actor>) scheduleOnce));
 			final ScheduleOnce annotation = scheduleOnce.getAnnotation(ScheduleOnce.class);
@@ -95,6 +101,7 @@ class ActorScanner {
 					"tick",
 					Akka.system().dispatcher(),
 					null);
+			Logger.debug(actor.getClass().getSimpleName() + " on delay: " + annotation.initialDelay() + " " + annotation.timeUnit());
 		}
 		
 	}
