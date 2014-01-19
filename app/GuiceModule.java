@@ -3,7 +3,6 @@ import services.SayHelloImpl;
 
 import com.google.inject.AbstractModule;
 
-
 public class GuiceModule extends AbstractModule {
 
 	@Override

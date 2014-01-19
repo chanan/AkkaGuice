@@ -96,6 +96,27 @@ In this case, the defaults of the annotation were used:
 * InitialDelay: 500
 * TimeUnit: MILLISECONDS
 
+Limitation
+----------
+
+Due to the way I integrated Akka & Guice together, by using Guice child injectors, the order of registration is important.
+Normally, you use one AbstractModule to register all your registrations in them. Due to this Guice is able to resolve them all
+no matter the order. Because AkkaGuice registers all the actors after you first create a module, any classes that use those actors
+will not resolve. Due to this, you may need to define two AbstractModules. The first, will contain all your services that any
+of your actors may require (Or you may also leave it blank). The second will contain any services that rely on those actors.
+
+An example of this can be seen in the class: Services.ServiceThatUsesActorImpl. It is defined in an AbstractModule named
+ServicesThatUseActorsModule. If the service registration were to be moved to GuiceModule it would trigger a runtime exception.
+In the OnStart method of Global, you need to call the new AbstractModule:
+
+```java
+@Override
+public void onStart(Application arg0) {
+	injector = AkkaGuice.Startup(injector, "services");
+	injector = injector.createChildInjector(new ServicesThatUseActorsModule());
+}
+```
+
 Final Note
 ----------
 

@@ -10,7 +10,7 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 
 <p>Add to your libraryDependencies:</p>
 <pre>
-	"akkaguice" % "akkaguice_2.10" % "0.1.0-SNAPSHOT
+	"akkaguice" %% "akkaguice" % "0.1.4-SNAPSHOT
 </pre>
 
 <h2>Initialization</h2>
@@ -93,6 +93,26 @@ final ActorRef perRequestActor = Akka.system().actorOf(GuiceProvider.get(Akka.sy
 <li>InitialDelay: 500</li>
 <li>TimeUnit: MILLISECONDS</li>
 </ul>
+
+<h2>Limitation</h2>
+
+<p>Due to the way I integrated Akka & Guice together, by using Guice child injectors, the order of registration is important.
+Normally, you use one AbstractModule to register all your registrations in them. Due to this Guice is able to resolve them all
+no matter the order. Because AkkaGuice registers all the actors after you first create a module, any classes that use those actors
+will not resolve. Due to this, you may need to define two AbstractModules. The first, will contain all your services that any
+of your actors may require (Or you may also leave it blank). The second will contain any services that rely on those actors.</p>
+
+<p>An example of this can be seen in the class: Services.ServiceThatUsesActorImpl. It is defined in an AbstractModule named
+ServicesThatUseActorsModule. If the service registration were to be moved to GuiceModule it would trigger a runtime exception.
+In the OnStart method of Global, you need to call the new AbstractModule:</p>
+
+<pre>
+@@Override
+public void onStart(Application arg0) {
+	injector = AkkaGuice.Startup(injector, "services");
+	injector = injector.createChildInjector(new ServicesThatUseActorsModule());
+}
+</pre>
 
 <h2>Final Note</h2>
 

@@ -26,6 +26,7 @@ import com.google.inject.name.Names;
 class ActorScanner {
 	
 	public static void ScanForActors(Binder binder, String... namespaces) {
+		Logger.debug("Actor Scanner Started...");
 		RegisterActors(binder, namespaces);
 		ScheduleActors(namespaces);
 		ScheduleOnceActors(namespaces);
@@ -81,7 +82,7 @@ class ActorScanner {
 					"tick",
 					Akka.system().dispatcher(),
 					null);
-			Logger.debug(actor.getClass().getSimpleName() + " on delay: " + annotation.initialDelay() + " interval: " + annotation.interval() + " " + annotation.timeUnit());
+			Logger.debug(schedule + " on delay: " + annotation.initialDelay() + " " + annotation.timeUnit() + " interval: " + annotation.interval() + " " + annotation.timeUnit());
 		}
 	}
 	
@@ -101,7 +102,7 @@ class ActorScanner {
 					"tick",
 					Akka.system().dispatcher(),
 					null);
-			Logger.debug(actor.getClass().getSimpleName() + " on delay: " + annotation.initialDelay() + " " + annotation.timeUnit());
+			Logger.debug(scheduleOnce + " on delay: " + annotation.initialDelay() + " " + annotation.timeUnit());
 		}
 		
 	}
