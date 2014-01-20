@@ -14,7 +14,7 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 Add to your libraryDependencies:
 
 ```java
-"akkaguice" % "akkaguice_2.10" % "0.2.0"
+"akkaguice" %% "akkaguice" % "0.2.0"
 ```
 
 Initialization
