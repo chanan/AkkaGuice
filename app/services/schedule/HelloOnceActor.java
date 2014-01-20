@@ -2,7 +2,7 @@ package services.schedule;
 
 import play.Logger;
 import akka.actor.UntypedActor;
-import akkaGuice.ScheduleOnce;
+import akkaGuice.annotations.ScheduleOnce;
 
 @ScheduleOnce()
 public class HelloOnceActor extends UntypedActor {

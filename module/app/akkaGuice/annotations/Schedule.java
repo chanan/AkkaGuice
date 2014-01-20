@@ -1,4 +1,4 @@
-package akkaGuice;
+package akkaGuice.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,8 +8,10 @@ import java.util.concurrent.TimeUnit;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ScheduleOnce {
+public @interface Schedule {
 	public int initialDelay() default 500;
 	
 	public TimeUnit timeUnit() default TimeUnit.MILLISECONDS;
+	
+	public int interval() default 1000;
 }

@@ -10,7 +10,7 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 
 <p>Add to your libraryDependencies:</p>
 <pre>
-	"akkaguice" %% "akkaguice" % "0.1.4-SNAPSHOT
+"akkaguice" %% "akkaguice" % "0.2.0"
 </pre>
 
 <h2>Initialization</h2>
@@ -31,7 +31,8 @@ public void onStart(Application arg0) {
 
 <p>Actors are bound to ActorRefs with a name of the class if there are no collision. 
 Otherwise they are bound to a Name of the fully qualified name. 
-For example, in the sample app in the Application controller the HelloActor is injected with the fully qualified name as two HelloActors exist in the project:</p>
+For example, in the sample app in the Application controller the HelloActor is injected with the fully qualified 
+name as two HelloActors exist in the project (You may also register an actor with a name. See below.):</p>
 
 <pre>
 private final ActorRef service;
@@ -66,6 +67,11 @@ private final SayHello hello;
 <pre>
 final ActorRef perRequestActor = Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(PerRequestActor.class));
 </pre>
+
+<h3>Registering an Actor with a Name</h3>
+
+<p>An actor can also be registered in Guice with a name by using the provided Named annotation. services.AnnotatedWithNamedActor
+shows an example of this. In controllers.Application it is injected with the name: @@Named("AnnotatedActor").</p>
 
 <h2>Scheduling</h2>
 
@@ -139,4 +145,9 @@ In the console log you will see output similar to this:</p>
 On the 3rd line we see a message from the on demand actor. Hitting refresh causes lines 7 and 9 to be printed. 
 Looking at lines 1 and 7 we can see that the Actors are the same. Looking at the per request actors we can see that they are not the same ActorRef.</p> 
 
+<h2>Release History</h2>
 
+<ul>
+	<li>0.2.0 - Added Named annotation</li>
+	<li>0.1.0 - Initial release</li>
+</ul>

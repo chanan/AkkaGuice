@@ -2,6 +2,7 @@ package akkaGuice;
 
 import static akkaGuice.GuiceExtension.GuiceProvider;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -18,6 +19,9 @@ import scala.concurrent.duration.Duration;
 import akka.actor.Actor;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
+import akkaGuice.annotations.Named;
+import akkaGuice.annotations.Schedule;
+import akkaGuice.annotations.ScheduleOnce;
 
 import com.google.inject.Binder;
 import com.google.inject.name.Names;
@@ -42,19 +46,37 @@ class ActorScanner {
 		Set<Class<? extends UntypedActor>> actors = reflections.getSubTypesOf(UntypedActor.class);
 	
 		for(final Class<? extends UntypedActor> actor : actors) {
-			if(map.containsKey(actor.getSimpleName())){
-				map.put(actor.getName(), actor);
-				final Class<? extends UntypedActor> tempActor = map.remove(actor.getSimpleName());
-				map.put(tempActor.getName(), tempActor);
+			String nameFromAnnotation = getNamedFromAnnotation(actor);
+			if(nameFromAnnotation != null) {
+				map.put(nameFromAnnotation, actor);
+			} else {
+				if(map.containsKey(actor.getSimpleName())){
+					map.put(actor.getName(), actor);
+					final Class<? extends UntypedActor> tempActor = map.remove(actor.getSimpleName());
+					map.put(tempActor.getName(), tempActor);
+				}
+				else map.put(actor.getSimpleName(), actor);
 			}
-			else map.put(actor.getSimpleName(), actor);
 		}
 		if(map.size() > 0) Logger.debug("Registering actors: ");
 		for(final String key : map.keySet()) {
 			final Class<? extends UntypedActor> actor = map.get(key);
 			binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toInstance(Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(actor)));
-			Logger.debug(actor.getSimpleName() + " to: " + key);
+			Logger.debug("class " + actor.getSimpleName() + " to name: " + key);
 		}
+	}
+
+	private static String getNamedFromAnnotation(final Class<? extends UntypedActor> actor) {
+		String value = null;
+		Annotation[] annotations = actor.getAnnotations();
+		for(final Annotation annotation : annotations) {
+			if(annotation instanceof Named) {
+				Named named = (Named) annotation;
+				value = named.value();
+				break;
+			}
+		}
+		return value;
 	}
 
 	private static ConfigurationBuilder build(String... namespaces) {

@@ -14,7 +14,7 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 Add to your libraryDependencies:
 
 ```java
-"akkaguice" % "akkaguice_2.10" % "0.1.0-SNAPSHOT
+"akkaguice" % "akkaguice_2.10" % "0.2.0"
 ```
 
 Initialization
@@ -34,7 +34,8 @@ Usage
 
 ### Actors in Controllers
 
-Actors are bound to ActorRefs with a name of the class if there are no collision. Otherwise they are bound to a Name of the fully qualified name. For example, in the sample app in the Application controller the HelloActor is injected with the fully qualified name as two HelloActors exist in the project:
+Actors are bound to ActorRefs with a name of the class if there are no collision. Otherwise they are bound to a Name of the fully qualified name. For example, in the sample app in the Application controller the HelloActor is injected with the fully qualified name as two HelloActors exist in the project
+(You may also register an actor with a name. See below.):
 
 ```java
 private final ActorRef service;
@@ -69,6 +70,11 @@ ActorRefs can also be request from Guice on demand. All injections will still be
 ```java
 final ActorRef perRequestActor = Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(PerRequestActor.class));
 ```
+
+### Registering an Actor with a Name
+
+An actor can also be registered in Guice with a name by using the provided Named annotation. services.AnnotatedWithNamedActor
+shows an example of this. In controllers.Application it is injected with the name: @Named("AnnotatedActor").
 
 Scheduling
 ---------
@@ -138,4 +144,8 @@ ActorRefs are registered in Guice as an instance. This means that when using the
 
 On line 1 we see the message from HelloActor that was injected into the Application controller. On the 3rd line we see a message from the on demand actor. Hitting refresh causes lines 7 and 9 to be printed. Looking at lines 1 and 7 we can see that the Actors are the same. Looking at the per request actors we can see that they are not the same ActorRef. 
 
+Release History
+---------------
 
+* 0.2.0 - Added Named annotation
+* 0.1.0 - Initial release
