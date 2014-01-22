@@ -91,11 +91,6 @@ ActorRefs can also be request from Guice on demand. All injections will still be
 final ActorRef perRequestActor = Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(PerRequestActor.class));
 ```
 
-### Registering an Actor with a Name
-
-An actor can also be registered in Guice with a name by using the provided Named annotation. services.AnnotatedWithNamedActor
-shows an example of this. In controllers.Application it is injected with the name: @Named("AnnotatedActor").
-
 Scheduling
 ---------
 
