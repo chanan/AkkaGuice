@@ -1,11 +1,10 @@
 package services;
-
 import play.Logger;
 import akka.actor.UntypedActor;
-import akkaGuice.annotations.Named;
+import akkaGuice.annotations.RegisterActor;
 
-@Named("AnnotatedActor")
-public class AnnotatedWithNamedActor extends UntypedActor {
+@RegisterActor("AnnotatedActor")
+public class AnnotatedWithNameActor extends UntypedActor {
 
 	@Override
 	public void onReceive(Object arg0) throws Exception {

@@ -10,7 +10,7 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 
 <p>Add to your libraryDependencies:</p>
 <pre>
-"akkaguice" %% "akkaguice" % "0.2.0"
+"akkaguice" %% "akkaguice" % "0.3.0"
 </pre>
 
 <h2>Initialization</h2>
@@ -27,12 +27,31 @@ public void onStart(Application arg0) {
 
 <h2>Usage</h2>
 
+<h3>Registering "Top Level" Actors</h3>
+
+<p>Annotate "top level" actors with @@RegisterActor. This will make them available in Guice to be injected into your controllers.
+If no value is provided to the annotation the ActorRef will be registered with the class name unless there is a collision. 
+In that case it will be registered with the fully qualified class name. Optionally, you may register an actor with a name.
+For example:</p>
+
+<pre>
+@@RegisterActor("AnnotatedActor")
+public class AnnotatedWithNameActor extends UntypedActor {
+
+	@@Override
+	public void onReceive(Object arg0) throws Exception {
+		Logger.info("Hello from actor using named annotation");
+	}
+}
+</pre>
+
+
 <h3>Actors in Controllers</h3>
 
-<p>Actors are bound to ActorRefs with a name of the class if there are no collision. 
-Otherwise they are bound to a Name of the fully qualified name. 
+<p>As mention above, when the annotation does not have a name, Actors are bound to ActorRefs with a name of the class 
+if there are no collision. Otherwise they are bound to a Name of the fully qualified name. 
 For example, in the sample app in the Application controller the HelloActor is injected with the fully qualified 
-name as two HelloActors exist in the project (You may also register an actor with a name. See below.):</p>
+name as two HelloActors exist in the project:</p>
 
 <pre>
 private final ActorRef service;
@@ -65,13 +84,8 @@ private final SayHello hello;
 <p>ActorRefs can also be request from Guice on demand. All injections will still be resolved. This example is from services.HelloActor:</p>
 
 <pre>
-final ActorRef perRequestActor = Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(PerRequestActor.class));
+final ActorRef perRequestActor = getContext().actorOf(GuiceProvider.get(Akka.system()).props(PerRequestActor.class));
 </pre>
-
-<h3>Registering an Actor with a Name</h3>
-
-<p>An actor can also be registered in Guice with a name by using the provided Named annotation. services.AnnotatedWithNamedActor
-shows an example of this. In controllers.Application it is injected with the name: @@Named("AnnotatedActor").</p>
 
 <h2>Scheduling</h2>
 
@@ -128,17 +142,21 @@ To see the difference in behaviour run the sample application browse to http://l
 In the console log you will see output similar to this:</p>
 
 <pre>
-[info] application - Hello from actor: Actor[akka://application/user/$d#310401062]
-[info] application - Hello from service. Being called from: Actor[akka://application/user/$d#310401062]
-[info] application - Hello from per request actor: Actor[akka://application/user/$g#1058244746]
-[info] application - Hello from service. Being called from: Actor[akka://application/user/$g#1058244746]
 [info] application - Say hello once!
-[info] application - Hello from more package every 2 seconds
-[info] application - Hello from actor: Actor[akka://application/user/$d#310401062]
-[info] application - Hello from service. Being called from: Actor[akka://application/user/$d#310401062]
-[info] application - Hello from per request actor: Actor[akka://application/user/$h#-1517058850]
-[info] application - Hello from service. Being called from: Actor[akka://application/user/$h#-1517058850]
-[info] application - Hello from more package every 2 seconds
+[info] application - Hello from InjectedActorIntoService that was injected into ServiceThatUsesActor
+[info] application - Hello from actor using named annotation
+[info] application - Hello from actor: Actor[akka://application/user/services.HelloActor#-373722303]
+[info] application - Hello from service. Being called from: Actor[akka://application/user/services.HelloActor#-373722303]
+[info] application - Hello from per request actor: Actor[akka://application/user/services.HelloActor/$a#-1180069760]
+[info] application - Hello from service. Being called from: Actor[akka://application/user/services.HelloActor/$a#-1180069760]
+[info] application - Hello from schedule package every 2 seconds
+[info] application - Hello from InjectedActorIntoService that was injected into ServiceThatUsesActor
+[info] application - Hello from actor: Actor[akka://application/user/services.HelloActor#-373722303]
+[info] application - Hello from actor using named annotation
+[info] application - Hello from service. Being called from: Actor[akka://application/user/services.HelloActor#-373722303]
+[info] application - Hello from per request actor: Actor[akka://application/user/services.HelloActor/$b#374554909]
+[info] application - Hello from service. Being called from: Actor[akka://application/user/services.HelloActor/$b#374554909]
+[info] application - Hello from schedule package every 2 seconds
 </pre>
 
 <p>On line 1 we see the message from HelloActor that was injected into the Application controller. 
@@ -148,6 +166,7 @@ Looking at lines 1 and 7 we can see that the Actors are the same. Looking at the
 <h2>Release History</h2>
 
 <ul>
+	<li>0.3.0 - Changed to not scan class automatically based on feedback on the Akka Google group.</li>
 	<li>0.2.0 - Added Named annotation</li>
 	<li>0.1.0 - Initial release</li>
 </ul>

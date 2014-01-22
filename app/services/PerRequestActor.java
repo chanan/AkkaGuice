@@ -1,13 +1,11 @@
 package services;
-
 import play.Logger;
 import akka.actor.UntypedActor;
 
 import com.google.inject.Inject;
 
 public class PerRequestActor extends UntypedActor {
-
-private final SayHello hello;
+	private final SayHello hello;
 	
 	@Inject
 	public PerRequestActor(SayHello hello) {
@@ -19,5 +17,4 @@ private final SayHello hello;
 		Logger.info("Hello from per request actor: " + getSelf());
 		hello.hello(getSelf().toString());
 	}
-
 }

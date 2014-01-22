@@ -1,5 +1,4 @@
 package services;
-
 import akka.actor.ActorRef;
 
 import com.google.inject.Inject;
@@ -17,5 +16,4 @@ public class ServiceThatUsesActorImpl implements ServiceThatUsesActor {
 	public void speak() {
 		actor.tell("speak", null);
 	}
-
 }
