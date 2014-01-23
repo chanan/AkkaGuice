@@ -114,7 +114,7 @@ Or:
 ```java
 final ActorRef perRequestActorByName = getContext().actorOf(PropsContext.get("PerRequest"));
 perRequestActorByName.tell("tick", getSelf());
-```java
+```
 
 Scheduling
 ---------
