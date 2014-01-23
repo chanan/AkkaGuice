@@ -1,5 +1,4 @@
 package akkaGuice;
-
 import akka.actor.AbstractExtensionId;
 import akka.actor.Actor;
 import akka.actor.ExtendedActorSystem;
@@ -9,7 +8,6 @@ import akka.actor.Props;
 import com.google.inject.Injector;
 
 public class GuiceExtension extends AbstractExtensionId<GuiceExtension.GuiceExt> {
-	
 	public static GuiceExtension GuiceProvider = new GuiceExtension();
 
 	public GuiceExt createExtension(ExtendedActorSystem system) {

@@ -1,9 +1,11 @@
 package services;
 import play.Logger;
 import akka.actor.UntypedActor;
+import akkaGuice.annotations.RegisterProps;
 
 import com.google.inject.Inject;
 
+@RegisterProps("PerRequest")
 public class PerRequestActor extends UntypedActor {
 	private final SayHello hello;
 	

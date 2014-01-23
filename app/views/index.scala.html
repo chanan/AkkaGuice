@@ -10,7 +10,7 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 
 <p>Add to your libraryDependencies:</p>
 <pre>
-"akkaguice" %% "akkaguice" % "0.3.0"
+"akkaguice" %% "akkaguice" % "0.4.0"
 </pre>
 
 <h2>Initialization</h2>
@@ -85,6 +85,31 @@ private final SayHello hello;
 
 <pre>
 final ActorRef perRequestActor = getContext().actorOf(GuiceProvider.get(Akka.system()).props(PerRequestActor.class));
+</pre>
+
+<h3>Registering Props for On Demand Actors</h3>
+
+<p>With the @@RegisterProps annotation, Props for on demand actors can also be registered in PropsContext. For example instead of the line above, one could annotate the PerRequestActor class:</p>
+
+<pre>
+@@RegisterProps("PerRequest")
+public class PerRequestActor extends UntypedActor {
+
+}
+</pre>
+
+<p>And then use either:</p>
+
+<pre>
+final ActorRef perRequestActorByClass = getContext().actorOf(PropsContext.get(PerRequestActor.class));
+perRequestActorByClass.tell("tick", getSelf());
+</pre>
+
+<p>Or:</p>
+
+<pre>
+final ActorRef perRequestActorByName = getContext().actorOf(PropsContext.get("PerRequest"));
+perRequestActorByName.tell("tick", getSelf());
 </pre>
 
 <h2>Scheduling</h2>
@@ -166,6 +191,7 @@ Looking at lines 1 and 7 we can see that the Actors are the same. Looking at the
 <h2>Release History</h2>
 
 <ul>
+	<li>0.4.0 - Added: RegisterProps and PropsContext</li>
 	<li>0.3.0 - Changed to not scan class automatically based on feedback on the Akka Google group.</li>
 	<li>0.2.0 - Added Named annotation</li>
 	<li>0.1.0 - Initial release</li>

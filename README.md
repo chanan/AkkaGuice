@@ -14,7 +14,7 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 Add to your libraryDependencies:
 
 ```java
-"akkaguice" %% "akkaguice" % "0.3.0"
+"akkaguice" %% "akkaguice" % "0.4.0"
 ```
 
 Initialization
@@ -91,6 +91,31 @@ ActorRefs can also be request from Guice on demand. All injections will still be
 final ActorRef perRequestActor = Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(PerRequestActor.class));
 ```
 
+### Registering Props for On Demand Actors
+
+With the @RegisterProps annotation, Props for on demand actors can also be registered in PropsContext. For example instead of the line above, one could annotate the PerRequestActor class:
+
+```java
+@@RegisterProps("PerRequest")
+public class PerRequestActor extends UntypedActor {
+
+}
+```
+
+And then use either:
+
+```java
+final ActorRef perRequestActorByClass = getContext().actorOf(PropsContext.get(PerRequestActor.class));
+perRequestActorByClass.tell("tick", getSelf());
+```
+
+Or:
+
+```java
+final ActorRef perRequestActorByName = getContext().actorOf(PropsContext.get("PerRequest"));
+perRequestActorByName.tell("tick", getSelf());
+```java
+
 Scheduling
 ---------
 
@@ -166,6 +191,7 @@ On line 1 we see the message from HelloActor that was injected into the Applicat
 Release History
 ---------------
 
+* 0.4.0 - Added: RegisterProps and PropsContext
 * 0.3.0 - Changed to not scan class automatically based on feedback on the Akka Google group.
 * 0.2.0 - Added Named annotation
 * 0.1.0 - Initial release
