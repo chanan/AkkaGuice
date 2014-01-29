@@ -88,7 +88,7 @@ private final SayHello hello;
 ActorRefs can also be request from Guice on demand. All injections will still be resolved. This example is from services.HelloActor:
 
 ```java
-final ActorRef perRequestActor = Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(PerRequestActor.class));
+final ActorRef perRequestActor = Akka.system().actorOf(PropsContext.get(PerRequestActor.class));
 ```
 
 ### Registering Props for On Demand Actors
@@ -96,7 +96,7 @@ final ActorRef perRequestActor = Akka.system().actorOf(GuiceProvider.get(Akka.sy
 With the @RegisterProps annotation, Props for on demand actors can also be registered in PropsContext. For example instead of the line above, one could annotate the PerRequestActor class:
 
 ```java
-@@RegisterProps("PerRequest")
+@RegisterProps("PerRequest")
 public class PerRequestActor extends UntypedActor {
 
 }
