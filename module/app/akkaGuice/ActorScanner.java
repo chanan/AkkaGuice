@@ -107,14 +107,34 @@ class ActorScanner {
 		for(final Class<?> schedule : schedules) {
 			final ActorRef actor = Akka.system().actorOf(GuiceProvider.get(Akka.system()).props((Class<? extends Actor>) schedule));
 			final Schedule annotation = schedule.getAnnotation(Schedule.class);
+			long initialDelay = 0;
+			long interval = 0;
+			TimeUnit timeUnitInitial = TimeUnit.MILLISECONDS;
+			TimeUnit timeUnitInterval = TimeUnit.MILLISECONDS;
+			String configInitial = schedule.getName() + ".initialDelay";
+			String configInterval = schedule.getName() + ".interval";
+			if(config.getString(configInitial) != null) {
+				initialDelay = getTime(config.getString(configInitial));
+				timeUnitInitial = getTimeUnit(config.getString(configInitial));
+			} else {
+				initialDelay = annotation.initialDelay();
+				timeUnitInitial = annotation.timeUnit();
+			}
+			if(config.getString(configInterval) != null) {
+				interval = getTime(config.getString(configInterval));
+				timeUnitInterval = getTimeUnit(config.getString(configInterval));
+			} else {
+				interval = annotation.interval();
+				timeUnitInterval = annotation.timeUnit();
+			}
 			Akka.system().scheduler().schedule(
-					Duration.apply(annotation.initialDelay(), annotation.timeUnit()),
-					Duration.apply(annotation.interval(), annotation.timeUnit()),
+					Duration.apply(initialDelay, timeUnitInterval),
+					Duration.apply(interval, timeUnitInterval),
 					actor,
 					"tick",
 					Akka.system().dispatcher(),
 					null);
-			Logger.debug(schedule + " on delay: " + annotation.initialDelay() + " " + annotation.timeUnit() + " interval: " + annotation.interval() + " " + annotation.timeUnit());
+			Logger.debug(schedule + " on delay: " + initialDelay + " " + timeUnitInitial + " interval: " + interval + " " + timeUnitInterval);
 		}
 	}
 	
