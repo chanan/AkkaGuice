@@ -10,7 +10,7 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 
 <p>Add to your libraryDependencies:</p>
 <pre>
-"akkaguice" %% "akkaguice" % "0.4.0"
+"akkaguice" %% "akkaguice" % "0.5.0"
 </pre>
 
 <h2>Initialization</h2>
@@ -139,6 +139,35 @@ perRequestActorByName.tell("tick", getSelf());
 <li>TimeUnit: MILLISECONDS</li>
 </ul>
 
+<h2>Scheduling via Conf File</h2>
+
+<p>If values are entered in the conf file they override the values of the annotation.</p>
+
+<h3>Schedule</h3>
+
+<p>The following entries can be entered in the conf file:</p>
+
+<pre>
+services.schedule.HelloRepeatConfigActor.initialDelay = 4 seconds
+services.schedule.HelloRepeatConfigActor.interval = 2 seconds
+</pre>
+
+<h3>Schedule once</h3>
+
+<p>The following can be entered via config:</p>
+
+<pre>
+services.schedule.HelloOnceConfigActor.initialDelay = 5 seconds
+</pre>
+
+<h3>Enable via config</h3>
+
+<p>You can diable both types of scheduled actors via config:</p>
+
+<pre>
+services.schedule.NotEnabledActor.enabled = false
+</pre>
+
 <h2>Limitation</h2>
 
 <p>Due to the way I integrated Akka & Guice together, by using Guice child injectors, the order of registration is important.
@@ -191,6 +220,7 @@ Looking at lines 1 and 7 we can see that the Actors are the same. Looking at the
 <h2>Release History</h2>
 
 <ul>
+	<li>0.5.0 - Scheduling via conf files</li>
 	<li>0.4.0 - Added: RegisterProps and PropsContext</li>
 	<li>0.3.0 - Changed to not scan class automatically based on feedback on the Akka Google group.</li>
 	<li>0.2.0 - Added Named annotation</li>
