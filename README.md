@@ -14,7 +14,7 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 Add to your libraryDependencies:
 
 ```java
-"akkaguice" %% "akkaguice" % "0.4.0"
+"akkaguice" %% "akkaguice" % "0.5.0"
 ```
 
 Initialization
@@ -142,6 +142,36 @@ In this case, the defaults of the annotation were used:
 * InitialDelay: 500
 * TimeUnit: MILLISECONDS
 
+Scheduling via Conf File
+------------------------
+
+If values are entered in the conf file they override the values of the annotation.
+
+### Schedule
+
+The following entries can be entered in the conf file:
+
+```java
+services.schedule.HelloRepeatConfigActor.initialDelay = 4 seconds
+services.schedule.HelloRepeatConfigActor.interval = 2 seconds
+```
+
+### Schedule once
+
+The following can be entered via config:
+
+```java
+services.schedule.HelloOnceConfigActor.initialDelay = 5 seconds
+```
+
+### Enable via config
+
+You can diable both types of scheduled actors via config:
+
+```java
+services.schedule.NotEnabledActor.enabled = false
+```
+
 Limitation
 ----------
 
@@ -191,6 +221,7 @@ On line 1 we see the message from HelloActor that was injected into the Applicat
 Release History
 ---------------
 
+* 0.5.0 - Scheduling via conf files
 * 0.4.0 - Added: RegisterProps and PropsContext
 * 0.3.0 - Changed to not scan class automatically based on feedback on the Akka Google group.
 * 0.2.0 - Added Named annotation
