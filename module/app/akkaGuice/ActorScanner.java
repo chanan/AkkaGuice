@@ -113,6 +113,8 @@ class ActorScanner {
 			TimeUnit timeUnitInterval = TimeUnit.MILLISECONDS;
 			String configInitial = schedule.getName() + ".initialDelay";
 			String configInterval = schedule.getName() + ".interval";
+			String configEnabled = schedule.getName() + ".enabled";
+			if(config.getString(configEnabled) != null && !config.getBoolean(configEnabled)) continue;
 			if(config.getString(configInitial) != null) {
 				initialDelay = getTime(config.getString(configInitial));
 				timeUnitInitial = getTimeUnit(config.getString(configInitial));
@@ -150,6 +152,8 @@ class ActorScanner {
 			long initialDelay = 0;
 			TimeUnit timeUnit = TimeUnit.MILLISECONDS;
 			String configName = scheduleOnce.getName() + ".initialDelay";
+			String configEnabled = scheduleOnce.getName() + ".enabled";
+			if(config.getString(configEnabled) != null && !config.getBoolean(configEnabled)) continue;
 			if(config.getString(configName) != null) {
 				initialDelay = getTime(config.getString(configName));
 				timeUnit = getTimeUnit(config.getString(configName));
