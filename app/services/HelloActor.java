@@ -6,8 +6,9 @@ import akkaGuice.PropsContext;
 import akkaGuice.annotations.RegisterActor;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
-@RegisterActor
+@RegisterActor @Singleton
 public class HelloActor extends UntypedActor {
 	private final SayHello hello;
 	
@@ -20,10 +21,10 @@ public class HelloActor extends UntypedActor {
 		Logger.info("Hello from actor: " + getSelf());
 		hello.hello(getSelf().toString());
 		
-		//final ActorRef perRequestActorByName = getContext().actorOf(PropsContext.get("PerRequest"));
-		//perRequestActorByName.tell("tick", getSelf());
+		final ActorRef perRequestActorByName = getContext().actorOf(PropsContext.get("PerRequest"));
+		perRequestActorByName.tell("tick", getSelf());
 		
-		//final ActorRef perRequestActorByClass = getContext().actorOf(PropsContext.get(PerRequestActor.class));
-		//perRequestActorByClass.tell("tick", getSelf());
+		final ActorRef perRequestActorByClass = getContext().actorOf(PropsContext.get(PerRequestActor.class));
+		perRequestActorByClass.tell("tick", getSelf());
 	}
 }

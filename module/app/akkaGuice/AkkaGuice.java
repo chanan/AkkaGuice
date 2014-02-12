@@ -12,7 +12,7 @@ public class AkkaGuice {
 	public static Injector Startup(Injector injector, String namespace) {
 		Logger.debug("Akka Guice Startup...");
 		GuiceProvider.get(Akka.system()).initialize(injector);
-		return injector.createChildInjector(new GuiceModule(namespace));
+		return injector.createChildInjector(new AkkaGuiceModule(namespace));
 	}
 	
 	public static void ScanForActors(Binder binder, String... namespaces) {
