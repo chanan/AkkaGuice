@@ -6,7 +6,8 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 public class Global extends GlobalSettings {
-	private Injector injector = Guice.createInjector(new GuiceModule());
+	//private Injector injector = Guice.createInjector(new GuiceModule());
+	private Injector injector;
 
 	public <A> A getControllerInstance(Class<A> clazz) throws Exception {
 		return injector.getInstance(clazz);
@@ -14,7 +15,9 @@ public class Global extends GlobalSettings {
 
 	@Override
 	public void onStart(Application arg0) {
-		injector = AkkaGuice.Startup(injector, "services");
-		injector = injector.createChildInjector(new ServicesThatUseActorsModule());
+		//injector = AkkaGuice.Startup(injector, "services");
+		//injector = injector.createChildInjector(new ServicesThatUseActorsModule());
+		injector = Guice.createInjector(new CombinedGuiceModule());
+		AkkaGuice.InitializeInjector(injector);
 	}
 }

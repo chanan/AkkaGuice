@@ -34,9 +34,9 @@ class ActorScanner {
 	public static void ScanForActors(Binder binder, String... namespaces) {
 		Logger.debug("Actor Scanner Started...");
 		RegisterActors(binder, namespaces);
-		RegisterProps(namespaces);
-		ScheduleActors(namespaces);
-		ScheduleOnceActors(namespaces);
+		//RegisterProps(namespaces);
+		//ScheduleActors(namespaces);
+		//ScheduleOnceActors(namespaces);
 	}
 	
 	private static void RegisterActors(Binder binder, String... namespaces) {
@@ -62,7 +62,8 @@ class ActorScanner {
 		for(final String key : map.keySet()) {
 			final Class<? extends UntypedActor> actor = map.get(key);
 			Logger.debug("Binding class " + actor.getSimpleName() + " to name: " + key);
-			binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toInstance(Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(actor), key));
+			//binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toInstance(Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(actor), key));
+			binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toProvider(new ActorRefProvider(actor));
 		}
 	}
 	

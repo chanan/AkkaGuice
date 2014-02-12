@@ -20,10 +20,10 @@ public class HelloActor extends UntypedActor {
 		Logger.info("Hello from actor: " + getSelf());
 		hello.hello(getSelf().toString());
 		
-		final ActorRef perRequestActorByName = getContext().actorOf(PropsContext.get("PerRequest"));
-		perRequestActorByName.tell("tick", getSelf());
+		//final ActorRef perRequestActorByName = getContext().actorOf(PropsContext.get("PerRequest"));
+		//perRequestActorByName.tell("tick", getSelf());
 		
-		final ActorRef perRequestActorByClass = getContext().actorOf(PropsContext.get(PerRequestActor.class));
-		perRequestActorByClass.tell("tick", getSelf());
+		//final ActorRef perRequestActorByClass = getContext().actorOf(PropsContext.get(PerRequestActor.class));
+		//perRequestActorByClass.tell("tick", getSelf());
 	}
 }
