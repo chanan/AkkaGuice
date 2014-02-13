@@ -9,7 +9,7 @@ public class AkkaGuice {
 	private AkkaGuice() { }
 
 	public static void InitializeInjector(Injector injector, String... namespaces) {
-		Logger.debug("InitializeInjector");
+		Logger.debug("Initialize Injector");
 		GuiceProvider.get(Akka.system()).initialize(injector);
 		ActorScanner.ScheduleActors(namespaces);
 		ActorScanner.ScheduleOnceActors(namespaces);
