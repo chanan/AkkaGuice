@@ -4,16 +4,16 @@
 
 <p>Add the following to your build.sbt:</p>
 
-<p><code><pre>
+<p><code>java
 resolvers += "release repository" at "http://chanan.github.io/maven-repo/releases/"
 resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapshots/"
-</pre></code></p>
+</code></p>
 
 <p>Add to your libraryDependencies:</p>
 
-<p><code><pre>
+<p><code>java
 "akkaguice" %% "akkaguice" % "0.6.0"
-</pre></code></p>
+</code></p>
 
 <h2>Initialization</h2>
 
@@ -21,42 +21,45 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 pass the injector to AkkaGuice.InitializeInjector() and your namespace 
 (such as com.company.project - in this case I am using the "services" package):</p>
 
-<p><code><pre>
+<p>```java
 public class Global extends GlobalSettings {
-	private Injector injector = Guice.createInjector(new AkkaGuiceModule("services"), new GuiceModule());
-	
-	@@Override
-	public void onStart(Application application)
-	{
-		AkkaGuice.InitializeInjector(injector, "services");
-	}
+    private Injector injector = Guice.createInjector(new AkkaGuiceModule("services"), new GuiceModule());</p>
+
+<pre><code>@Override
+public void onStart(Application arg0) {
+    AkkaGuice.InitializeInjector(injector, "services");
 }
-</pre></code></p>
+</code></pre>
+
+<p>}
+```</p>
 
 <h2>Usage</h2>
 
 <h3>Registering Actors</h3>
 
-<p>Annotate actors with @@RegisterActor. This will make them available in Guice to be injected into your controllers or services.
+<p>Annotate actors with @RegisterActor. This will make them available in Guice to be injected into your controllers or services.
 If no value is provided to the annotation the ActorRef will be registered with the class name unless there is a collision. 
 In that case it will be registered with the fully qualified class name. Optionally, you may register an actor with a name.
 For example:</p>
 
-<p><code><pre>
-@@RegisterActor("AnnotatedActor") @@Singleton
-public class AnnotatedWithNameActor extends UntypedActor {
+<p>```java
+@RegisterActor("AnnotatedActor") @Singleton
+public class AnnotatedWithNameActor extends UntypedActor {</p>
 
-	@@Override
-	public void onReceive(Object arg0) throws Exception {
-		Logger.info("Hello from actor using named annotation");
-	}
+<pre><code>@Override
+public void onReceive(Object arg0) throws Exception {
+    Logger.info("Hello from actor using named annotation");
 }
-</pre></code></p>
+</code></pre>
+
+<p>}
+```</p>
 
 <h3>Top Level Actors Versus Per Request Actors</h3>
 
-<p>An actor marked with the @@Singleton annotation will return the same ActorRef from Guice. If the Actor is not annotated
-as a @@Singleton, a new ActorRef will be returned each time. Also, the actor will be registered in AkkaGuice's 
+<p>An actor marked with the @Singleton annotation will return the same ActorRef from Guice. If the Actor is not annotated
+as a @Singleton, a new ActorRef will be returned each time. Also, the actor will be registered in AkkaGuice's 
 PropsContext (See below: "On Demand Creation of Actors").</p>
 
 <h3>Actors in Controllers</h3>
@@ -66,46 +69,49 @@ if there are no collision. Otherwise they are bound to a Name of the fully quali
 For example, in the sample app in the Application controller the HelloActor is injected with the fully qualified 
 name as two HelloActors exist in the project:</p>
 
-<p><code><pre>
-private final ActorRef service;
+<p>```java
+private final ActorRef service;</p>
 
-@@Inject
-public Application(@@Named("services.HelloActor") ActorRef service) {
-	this.service = service;
+<p>@Inject
+public Application(@Named("services.HelloActor") ActorRef service) {
+    this.service = service;
 }
-</pre></code></p>
+```</p>
 
 <h3>Services in Actors</h3>
 
 <p>Any services injected into actors will be resolved as well:</p>
 
-<p><code><pre>
+<p>```java
 public class HelloActor extends UntypedActor {
-	private final SayHello hello;
+private final SayHello hello;</p>
 
-	@@Inject
-	public HelloActor(SayHello hello) {
-		this.hello = hello;
-	}
-	...
+<pre><code>@Inject
+public HelloActor(SayHello hello) {
+    this.hello = hello;
 }
-</pre></code></p>
+
+...
+</code></pre>
+
+<p>}
+```</p>
 
 <h3>On Demand Creation of Actors</h3>
 
 <p>ActorRefs can also be request from Guice on demand. All injections will still be resolved. 
 This example is from services.HelloActor:</p>
 
-<p><code><pre>
+<p><code>java
 final ActorRef perRequestActor = Akka.system().actorOf(PropsContext.get(PerRequestActor.class));
-</pre></code></p>
+</code></p>
 
 <p>Or:</p>
 
-<p><code><pre>
+<p><code>java
 final ActorRef perRequestActorByName = getContext().actorOf(PropsContext.get("PerRequest"));
 perRequestActorByName.tell("tick", getSelf());
-</pre></code></p>
+</code></p>
 
 <h2>Scheduling</h2>
 
@@ -117,18 +123,18 @@ to the Actor on the schedule set by the annotation. </p>
 <p>As seen in the services.schedule.HelloActor class, use the schedule annotation to 
 periodically ping your actor:</p>
 
-<p><code><pre>
-@@Schedule(initialDelay = 1, timeUnit = TimeUnit.SECONDS, interval = 2)
-</pre></code></p>
+<p><code>java
+@Schedule(initialDelay = 1, timeUnit = TimeUnit.SECONDS, interval = 2)
+</code></p>
 
 <h3>Schedule Once</h3>
 
 <p>To ping your actor one time use the ScheduleOnce annotation. This example is located in 
 services.schedule.HelloOnceActor:</p>
 
-<p><code><pre>
-@@ScheduleOnce()
-</pre></code></p>
+<p><code>java
+@ScheduleOnce()
+</code></p>
 
 <p>In this case, the defaults of the annotation were used:</p>
 
@@ -145,7 +151,7 @@ services.schedule.HelloOnceActor:</p>
 
 <p>The following entries can be entered in the conf file:</p>
 
-<p><code><pre>
+<p><code>java
 services.schedule.HelloRepeatConfigActor.initialDelay = 4 seconds
 services.schedule.HelloRepeatConfigActor.interval = 2 seconds
 </code></p>
@@ -154,17 +160,17 @@ services.schedule.HelloRepeatConfigActor.interval = 2 seconds
 
 <p>The following can be entered via config:</p>
 
-<p><code><pre>
+<p><code>java
 services.schedule.HelloOnceConfigActor.initialDelay = 5 seconds
-</pre></code></p>
+</code></p>
 
 <h3>Enable via config</h3>
 
 <p>You can diable both types of scheduled actors via config:</p>
 
-<p><code><pre>
+<p><code>java
 services.schedule.NotEnabledActor.enabled = false
-</pre></code></p>
+</code></p>
 
 <h2>Release History</h2>
 

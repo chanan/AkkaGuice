@@ -1,5 +1,4 @@
 package akkaGuice;
-
 import static akkaGuice.GuiceExtension.GuiceProvider;
 import play.Logger;
 import play.libs.Akka;
@@ -7,10 +6,12 @@ import play.libs.Akka;
 import com.google.inject.Injector;
 
 public class AkkaGuice {
+	private AkkaGuice() { }
 
-	public static Injector Startup(Injector injector, String namespace) {
-		Logger.debug("Akka Guice Startup...");
+	public static void InitializeInjector(Injector injector, String... namespaces) {
+		Logger.debug("Initialize Injector");
 		GuiceProvider.get(Akka.system()).initialize(injector);
-		return injector.createChildInjector(new GuiceModule(namespace));
+		ActorScanner.ScheduleActors(namespaces);
+		ActorScanner.ScheduleOnceActors(namespaces);
 	}
 }
