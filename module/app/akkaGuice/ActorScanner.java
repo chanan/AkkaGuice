@@ -1,12 +1,9 @@
 package akkaGuice;
 import static akkaGuice.GuiceExtension.GuiceProvider;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
@@ -19,62 +16,11 @@ import play.libs.Akka;
 import scala.concurrent.duration.Duration;
 import akka.actor.Actor;
 import akka.actor.ActorRef;
-import akka.actor.UntypedActor;
-import akkaGuice.annotations.RegisterActor;
 import akkaGuice.annotations.Schedule;
 import akkaGuice.annotations.ScheduleOnce;
 
-import com.google.inject.Binder;
-import com.google.inject.Singleton;
-import com.google.inject.name.Names;
-
 class ActorScanner {
 	private static Configuration config = Play.application().configuration();
-	
-	public static void ScanForActors(Binder binder, String... namespaces) {
-		Logger.debug("Actor Scanner Started...");
-		RegisterActors(binder, namespaces);
-		//ScheduleActors(namespaces);
-		//ScheduleOnceActors(namespaces);
-	}
-	
-	private static void RegisterActors(Binder binder, String... namespaces) {
-		final Map<String, Class<? extends UntypedActor>> map = new HashMap<>();		
-		final ConfigurationBuilder configBuilder = build(namespaces);
-		final Reflections reflections = new Reflections(configBuilder.setScanners(new TypeAnnotationsScanner()));
-		final Set<Class<?>> actors = reflections.getTypesAnnotatedWith(RegisterActor.class);	
-		for(final Class<?> potentialActor : actors) {
-			final Class<? extends UntypedActor> actor = potentialActor.asSubclass(UntypedActor.class);
-			final RegisterActor annotation = actor.getAnnotation(RegisterActor.class);
-			if(!StringUtils.isEmpty(annotation.value())) {
-				map.put(annotation.value(), actor);
-			} else {
-				if(map.containsKey(actor.getSimpleName())){
-					map.put(actor.getName(), actor);
-					final Class<? extends UntypedActor> tempActor = map.remove(actor.getSimpleName());
-					map.put(tempActor.getName(), tempActor);
-				}
-				else map.put(actor.getSimpleName(), actor);
-			}
-		}
-		if(!map.isEmpty()) Logger.debug("Registering actors: ");
-		for(final String key : map.keySet()) {
-			final Class<? extends UntypedActor> actor = map.get(key);
-			if(isSingleton(actor)) {
-				Logger.debug("Binding class " + actor.getSimpleName() + " to name: " + key + " Singleton Scoped.");
-				binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toProvider(new ActorRefProvider(actor)).in(Singleton.class);
-			} else {
-				Logger.debug("Binding class " + actor.getSimpleName() + " to name: " + key + " Request Scoped.");
-				binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toProvider(new ActorRefProvider(actor));
-				Logger.debug("Registering Props for class " + actor.getSimpleName() + " to name: " + key + " in PropsContext.");
-				PropsContext.put(key, actor);
-			}
-		}
-	}
-	
-	private static boolean isSingleton(Class<? extends UntypedActor> actor) {
-		return actor.getAnnotation(Singleton.class) != null;
-	}
 
 	private static ConfigurationBuilder build(String... namespaces) {
 		final ConfigurationBuilder configBuilder = new ConfigurationBuilder();
@@ -85,7 +31,7 @@ class ActorScanner {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static void ScheduleActors(String... namespaces) {
+	static void ScheduleActors(String... namespaces) {
 		final ConfigurationBuilder configBuilder = build(namespaces);
 		final Reflections reflections = new Reflections(configBuilder.setScanners(new TypeAnnotationsScanner()));	
 		final Set<Class<?>> schedules = reflections.getTypesAnnotatedWith(Schedule.class);
@@ -127,7 +73,7 @@ class ActorScanner {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static void ScheduleOnceActors(String... namespaces) {
+	static void ScheduleOnceActors(String... namespaces) {
 		final ConfigurationBuilder configBuilder = build(namespaces);
 		final Reflections reflections = new Reflections(configBuilder.setScanners(new TypeAnnotationsScanner()));		
 		final Set<Class<?>> schedules = reflections.getTypesAnnotatedWith(ScheduleOnce.class);

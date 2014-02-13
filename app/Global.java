@@ -16,6 +16,6 @@ public class Global extends GlobalSettings {
 	@Override
 	public void onStart(Application arg0) {
 		injector = Guice.createInjector(new AkkaGuiceModule("services"), new GuiceModule());
-		AkkaGuice.InitializeInjector(injector);
+		AkkaGuice.InitializeInjector(injector, "services");
 	}
 }
