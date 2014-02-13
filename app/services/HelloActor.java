@@ -6,8 +6,9 @@ import akkaGuice.PropsContext;
 import akkaGuice.annotations.RegisterActor;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
-@RegisterActor
+@RegisterActor @Singleton
 public class HelloActor extends UntypedActor {
 	private final SayHello hello;
 	

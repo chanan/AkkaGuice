@@ -37,7 +37,7 @@ public class PropsContext {
 		return map.keySet();
 	}
 
-	public static boolean isEmpty() {
+	protected static boolean isEmpty() {
 		return map.isEmpty();
 	}
 }
