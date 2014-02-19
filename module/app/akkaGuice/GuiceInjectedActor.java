@@ -5,7 +5,7 @@ import akka.actor.IndirectActorProducer;
 
 import com.google.inject.Injector;
 
-public class GuiceInjectedActor implements IndirectActorProducer {
+class GuiceInjectedActor implements IndirectActorProducer {
 	final Injector injector;
 	final Class<? extends Actor> actorClass;
 	

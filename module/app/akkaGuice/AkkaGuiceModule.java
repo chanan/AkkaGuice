@@ -39,7 +39,6 @@ public class AkkaGuiceModule extends AbstractModule {
 		final Reflections reflections = new Reflections(configBuilder.setScanners(new SubTypesScanner()));
 		final Set<Class<? extends UntypedActor>> actors = reflections.getSubTypesOf(UntypedActor.class);
 		for(final Class<? extends Actor> actor : actors) {
-			//Check here for Named
 			final String named = getNamed(actor);
 			final boolean isSingleton = isSingleton(actor);
 			final ActorHolder actorHolder = new ActorHolder(actor, isSingleton);
@@ -61,12 +60,9 @@ public class AkkaGuiceModule extends AbstractModule {
 			if(actorHolder.isSingleton()) {
 				Logger.debug("Binding class " + actor.getSimpleName() + " to name: " + key + " Singleton Scoped.");
 				binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toProvider(new ActorRefProvider(actor)).in(Singleton.class);
-				//Logger.debug("Registering Props for class " + actor.getSimpleName() + " to name: " + key + " in PropsContext Singleton Scoped.");
-				//PropsContext.put(key, actor, provider);
 			} else {
 				Logger.debug("Binding class " + actor.getSimpleName() + " to name: " + key + " Request Scoped.");
 				binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toProvider(new ActorRefProvider(actor));
-				Logger.debug("Registering Props for class " + actor.getSimpleName() + " to name: " + key + " in PropsContext Request Scoped.");
 				PropsContext.put(key, actorHolder);
 			}
 		}
