@@ -1,5 +1,6 @@
 import play.Application;
 import play.GlobalSettings;
+import play.Logger;
 import akkaGuice.AkkaGuice;
 import akkaGuice.AkkaGuiceModule;
 
@@ -16,5 +17,6 @@ public class Global extends GlobalSettings {
 	@Override
 	public void onStart(Application arg0) {
 		AkkaGuice.InitializeInjector(injector, "services");
+		Logger.debug(injector.getAllBindings().toString());
 	}
 }

@@ -3,10 +3,8 @@ import java.util.concurrent.TimeUnit;
 
 import play.Logger;
 import akka.actor.UntypedActor;
-import akkaGuice.annotations.RegisterActor;
 import akkaGuice.annotations.Schedule;
 
-@RegisterActor
 @Schedule(initialDelay = 1, timeUnit = TimeUnit.SECONDS, interval = 2)
 public class HelloActor extends UntypedActor {
 

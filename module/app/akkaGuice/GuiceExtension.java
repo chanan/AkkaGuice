@@ -24,5 +24,9 @@ public class GuiceExtension extends AbstractExtensionId<GuiceExtension.GuiceExt>
 	    public Props props(Class<? extends Actor> actorClass) {
 	        return Props.create(GuiceInjectedActor.class, injector, actorClass);
 	    }
+	    
+	    Injector getInjector() {
+	    	return injector;
+	    }
 	}
 }
