@@ -67,7 +67,7 @@ PropsContext (See below: "On Demand Creation of Actors").</p>
 
 <h3>A Note About Usage of Singleton</h3>
 
-<p>You may have the <a href="http://doc.akka.io/docs/akka/2.2.3/java/untyped-actors.html#Dependency_Injection">
+<p>You may have seen the <a href="http://doc.akka.io/docs/akka/2.2.3/java/untyped-actors.html#Dependency_Injection">
 warning in the akka documentation in the Dependancy Injection section</a> regarding using Singleton attribute. 
 The warning applies to returning the same actor class. In the case of AkkaGuice we are
 returning the same ActorRef. This still allows Akka to restart the actor if needed.</p>
