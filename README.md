@@ -14,19 +14,20 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 Add to your libraryDependencies:
 
 ```java
-"akkaguice" %% "akkaguice" % "0.6.0"
+"akkaguice" %% "akkaguice" % "0.7.0"
 ```
 
 Initialization
 --------------
 
-In Global.java create an Injector. In the onStart callback method 
-pass the injector to AkkaGuice.InitializeInjector() and your namespace 
+In Global.java create an Injector using AkkaGuiceModule with a list of your namespaces that will contain your actors. You may also
+pass in your own GuiceModules, as in the example below. 
+Next, in the onStart callback method pass the injector to AkkaGuice.InitializeInjector() and your namespace 
 (such as com.company.project - in this case I am using the "services" package):
 
 ```java
 public class Global extends GlobalSettings {
-	private Injector injector = Guice.createInjector(new AkkaGuiceModule("services"), new GuiceModule());
+	private final Injector injector = Guice.createInjector(new AkkaGuiceModule("services"), new GuiceModule());
 
 	@Override
 	public void onStart(Application arg0) {
@@ -40,13 +41,20 @@ Usage
 
 ### Registering Actors
 
-Annotate actors with @RegisterActor. This will make them available in Guice to be injected into your controllers or services.
-If no value is provided to the annotation the ActorRef will be registered with the class name unless there is a collision. 
-In that case it will be registered with the fully qualified class name. Optionally, you may register an actor with a name.
+AkkaGuice will scan your code in the packages you set in the intialization above. This will make them available in Guice 
+to be injected into your controllers or services.
+
+### Naming an Actor
+
+AkkaGuice will be default register your actors by the class name. If a collision occurs, it will use the fully qualified 
+class name of the actor. An example of this is the 
+HelloActor in the sample project. There is one registered as services.HelloActor and one as services.schedule.HelloActor. 
+You may also name your actor using @Named annotation (java.inject.Named).
+
 For example:
 
 ```java
-@RegisterActor("AnnotatedActor") @Singleton
+@Named("AnnotatedActor") @Singleton
 public class AnnotatedWithNameActor extends UntypedActor {
 
 	@Override
@@ -59,13 +67,19 @@ public class AnnotatedWithNameActor extends UntypedActor {
 ### Top Level Actors Versus Per Request Actors
 
 An actor marked with the @Singleton annotation will return the same ActorRef from Guice. If the Actor is not annotated
-as a @Singleton, a new ActorRef will be returned each time. Also, the actor will be registered in AkkaGuice's 
+as a @Singleton, a new ActorRef will be returned each time. Also, a non-singleton actor will be registered in AkkaGuice's 
 PropsContext (See below: "On Demand Creation of Actors").
+
+### A Note About Usage of Singleton
+
+You may have the [warning in the akka documentation in the Dependancy Injection section](http://doc.akka.io/docs/akka/2.2.3/java/untyped-actors.html#Dependency_Injection)
+regarding using Singleton attribute. The warning applies to returning the same actor class. In the case of AkkaGuice we are
+returning the same ActorRef. This still allows Akka to restart the actor if needed.
 
 ### Actors in Controllers
 
 As mention above, when the annotation does not have a name, Actors are bound to ActorRefs with a name of the class 
-if there are no collision. Otherwise they are bound to a Name of the fully qualified name. 
+if there are no collision. Otherwise they are bound to a name of the fully qualified class name. 
 For example, in the sample app in the Application controller the HelloActor is injected with the fully qualified 
 name as two HelloActors exist in the project:
 
@@ -97,7 +111,7 @@ private final SayHello hello;
 
 ### On Demand Creation of Actors
 
-ActorRefs can also be request from Guice on demand. All injections will still be resolved. 
+Per Request ActorRefs can also be requested from Guice on demand. All injections will still be resolved. 
 This example is from services.HelloActor:
 
 ```java
@@ -108,7 +122,6 @@ Or:
 
 ```java
 final ActorRef perRequestActorByName = getContext().actorOf(PropsContext.get("PerRequest"));
-perRequestActorByName.tell("tick", getSelf());
 ```
 
 Scheduling
@@ -173,6 +186,7 @@ services.schedule.NotEnabledActor.enabled = false
 Release History
 ---------------
 
+* 0.7.0 - Removed @RegisterActor in favor of @Singleton & @Named
 * 0.6.0 - Change the API to not require child injectors
 * 0.5.0 - Scheduling via conf files
 * 0.4.0 - Added: RegisterProps and PropsContext
