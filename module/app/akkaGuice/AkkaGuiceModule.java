@@ -59,10 +59,10 @@ public class AkkaGuiceModule extends AbstractModule {
 			final Class<? extends Actor> actor = actorHolder.getActor();
 			if(actorHolder.isSingleton()) {
 				Logger.debug("Binding class " + actor.getSimpleName() + " to name: " + key + " Singleton Scoped.");
-				binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toProvider(new ActorRefProvider(actor)).in(Singleton.class);
+				binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toProvider(new ActorRefProvider(actor, key, true)).in(Singleton.class);
 			} else {
 				Logger.debug("Binding class " + actor.getSimpleName() + " to name: " + key + " Request Scoped.");
-				binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toProvider(new ActorRefProvider(actor));
+				binder.bind(ActorRef.class).annotatedWith(Names.named(key)).toProvider(new ActorRefProvider(actor, key, false));
 				PropsContext.put(key, actorHolder);
 			}
 		}
