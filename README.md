@@ -14,7 +14,7 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 Add to your libraryDependencies:
 
 ```java
-"akkaguice" %% "akkaguice" % "0.7.0"
+"akkaguice" %% "akkaguice" % "0.7.1"
 ```
 
 Initialization
@@ -186,6 +186,7 @@ services.schedule.NotEnabledActor.enabled = false
 Release History
 ---------------
 
+* 0.7.1 - Actors created with akka guice will get a name based on the key
 * 0.7.0 - Removed @RegisterActor in favor of @Singleton & @Named
 * 0.6.0 - Change the API to not require child injectors
 * 0.5.0 - Scheduling via conf files
