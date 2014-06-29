@@ -75,7 +75,7 @@ public class AkkaGuiceModule extends AbstractModule {
 	}
 
 	private static boolean isSingleton(Class<? extends Actor> actor) {
-		return actor.getAnnotation(Singleton.class) != null;
+		return actor.getAnnotation(Singleton.class) != null || actor.getAnnotation(javax.inject.Singleton.class) != null;
 	}
 
 	private static ConfigurationBuilder build(String... namespaces) {
