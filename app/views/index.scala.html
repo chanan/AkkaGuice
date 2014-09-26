@@ -12,7 +12,7 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 <p>Add to your libraryDependencies:</p>
 
 <p><code><pre>
-"akkaguice" %% "akkaguice" % "0.7.1"
+"akkaguice" %% "akkaguice" % "0.8.0"
 </pre></code></p>
 
 <h2>Initialization</h2>
@@ -182,6 +182,7 @@ services.schedule.NotEnabledActor.enabled = false
 <h2>Release History</h2>
 
 <ul>
+<li>0.8.0 - Updated to support AbstractActor in Akka 2.3</li>
 <li>0.7.1 - Actors created with akka guice will get a name based on the key</li>
 <li>0.7.0 - Removed @@RegisterActor in favor of @@Singleton & @@Named</li>
 <li>0.6.0 - Change the API to not require child injectors</li>

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.inject.Named;
 
+import akka.actor.AbstractActor;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
@@ -38,22 +39,10 @@ public class AkkaGuiceModule extends AbstractModule {
 		final ConfigurationBuilder configBuilder = build(namespaces);
 		final Reflections reflections = new Reflections(configBuilder.setScanners(new SubTypesScanner()));
 		final Set<Class<? extends UntypedActor>> actors = reflections.getSubTypesOf(UntypedActor.class);
-		for(final Class<? extends Actor> actor : actors) {
-			final String named = getNamed(actor);
-			final boolean isSingleton = isSingleton(actor);
-			final ActorHolder actorHolder = new ActorHolder(actor, isSingleton);
-			if(named != null) {
-				map.put(named, actorHolder);
-			} else {
-				if(map.containsKey(actor.getSimpleName())){
-					map.put(actor.getName(), actorHolder);
-					final ActorHolder tempHolder = map.remove(actor.getSimpleName());
-					map.put(tempHolder.getActor().getName(), tempHolder);
-				}
-				else map.put(actor.getSimpleName(), actorHolder);
-			}
-		}
-		if(!map.isEmpty()) Logger.debug("Registering actors: ");
+        final Set<Class<? extends AbstractActor>> abstractActors = reflections.getSubTypesOf(AbstractActor.class);
+        loopOnActors(map, actors);
+        loopOnAbstractActors(map, abstractActors);
+        if(!map.isEmpty()) Logger.debug("Registering actors: ");
 		for(final String key : map.keySet()) {
 			final ActorHolder actorHolder = map.get(key);
 			final Class<? extends Actor> actor = actorHolder.getActor();
@@ -67,15 +56,51 @@ public class AkkaGuiceModule extends AbstractModule {
 			}
 		}
 	}
-	
-	private static String getNamed(Class<? extends Actor> actor) {
+
+    private static void loopOnAbstractActors(Map<String, ActorHolder> map, Set<Class<? extends AbstractActor>> actors) {
+        for(final Class<? extends Actor> actor : actors) {
+            final String named = getNamed(actor);
+            final boolean isSingleton = isSingleton(actor);
+            final ActorHolder actorHolder = new ActorHolder(actor, isSingleton);
+            if(named != null) {
+                map.put(named, actorHolder);
+            } else {
+                if(map.containsKey(actor.getSimpleName())){
+                    map.put(actor.getName(), actorHolder);
+                    final ActorHolder tempHolder = map.remove(actor.getSimpleName());
+                    map.put(tempHolder.getActor().getName(), tempHolder);
+                }
+                else map.put(actor.getSimpleName(), actorHolder);
+            }
+        }
+    }
+
+    private static void loopOnActors(Map<String, ActorHolder> map, Set<Class<? extends UntypedActor>> actors) {
+        for(final Class<? extends Actor> actor : actors) {
+            final String named = getNamed(actor);
+            final boolean isSingleton = isSingleton(actor);
+            final ActorHolder actorHolder = new ActorHolder(actor, isSingleton);
+            if(named != null) {
+                map.put(named, actorHolder);
+            } else {
+                if(map.containsKey(actor.getSimpleName())){
+                    map.put(actor.getName(), actorHolder);
+                    final ActorHolder tempHolder = map.remove(actor.getSimpleName());
+                    map.put(tempHolder.getActor().getName(), tempHolder);
+                }
+                else map.put(actor.getSimpleName(), actorHolder);
+            }
+        }
+    }
+
+    private static String getNamed(Class<? extends Actor> actor) {
 		if(actor.getAnnotation(Named.class) == null) return null;
 		Named named = actor.getAnnotation(Named.class);
 		return named.value();
 	}
 
 	private static boolean isSingleton(Class<? extends Actor> actor) {
-		return actor.getAnnotation(Singleton.class) != null;
+        return actor.getAnnotation(Singleton.class) != null || actor.getAnnotation(javax.inject.Singleton.class) != null;
 	}
 
 	private static ConfigurationBuilder build(String... namespaces) {

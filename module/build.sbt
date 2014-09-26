@@ -1,6 +1,6 @@
 name := "AkkaGuice"
 
-version := "0.7.1"
+version := "0.8.0"
 
 libraryDependencies ++= Seq(
   "com.google.inject" % "guice" % "3.0",
@@ -16,6 +16,6 @@ publishTo <<= version { (v: String) =>
 
 publishArtifact in(Compile, packageDoc) := false
 
-publishMavenStyle := true    
+publishMavenStyle := true
 
-play.Project.playJavaSettings
+scalaVersion := "2.11.1"
