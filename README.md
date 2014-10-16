@@ -8,13 +8,14 @@ Add the following to your build.sbt:
 
 ```java
 resolvers += "release repository" at "http://chanan.github.io/maven-repo/releases/"
+
 resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapshots/"
 ```
 
 Add to your libraryDependencies:
 
 ```java
-"akkaguice" %% "akkaguice" % "0.8.0"
+"akkaguice" %% "akkaguice" % "0.8.1"
 ```
 
 Initialization
@@ -186,6 +187,7 @@ services.schedule.NotEnabledActor.enabled = false
 Release History
 ---------------
 
+* 0.8.1 - Compatible with Java 7 and 8
 * 0.8.0 - Updated to support AbstractActor in Akka 2.3
 * 0.7.1 - Actors created with akka guice will get a name based on the key
 * 0.7.0 - Removed @RegisterActor in favor of @Singleton & @Named
