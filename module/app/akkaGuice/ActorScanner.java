@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
@@ -22,18 +23,17 @@ import akkaGuice.annotations.ScheduleOnce;
 class ActorScanner {
 	private static Configuration config = Play.application().configuration();
 
-	private static ConfigurationBuilder build(String... namespaces) {
-		final ConfigurationBuilder configBuilder = new ConfigurationBuilder();
-		for(final String namespace : namespaces) {
-			configBuilder.addUrls(ClasspathHelper.forPackage(namespace));
-		}
-		return configBuilder;
-	}
+    private static ConfigurationBuilder build() {
+        final ConfigurationBuilder configBuilder = new ConfigurationBuilder();
+        configBuilder.addClassLoaders(ClasspathHelper.classLoaders(AkkaGuicePlugin.getClassLoader()));
+        configBuilder.addUrls(ClasspathHelper.forClassLoader(AkkaGuicePlugin.getClassLoader()));
+        return configBuilder;
+    }
 	
 	@SuppressWarnings("unchecked")
-	static void ScheduleActors(String... namespaces) {
-		final ConfigurationBuilder configBuilder = build(namespaces);
-		final Reflections reflections = new Reflections(configBuilder.setScanners(new TypeAnnotationsScanner()));	
+	static void ScheduleActors() {
+		final ConfigurationBuilder configBuilder = build();
+		final Reflections reflections = new Reflections(configBuilder.setScanners(new SubTypesScanner(), new TypeAnnotationsScanner()));
 		final Set<Class<?>> schedules = reflections.getTypesAnnotatedWith(Schedule.class);
 		if(!schedules.isEmpty()) Logger.debug("Scheduling actors:");
 		for(final Class<?> schedule : schedules) {
@@ -73,9 +73,9 @@ class ActorScanner {
 	}
 	
 	@SuppressWarnings("unchecked")
-	static void ScheduleOnceActors(String... namespaces) {
-		final ConfigurationBuilder configBuilder = build(namespaces);
-		final Reflections reflections = new Reflections(configBuilder.setScanners(new TypeAnnotationsScanner()));		
+	static void ScheduleOnceActors() {
+		final ConfigurationBuilder configBuilder = build();
+		final Reflections reflections = new Reflections(configBuilder.setScanners(new SubTypesScanner(), new TypeAnnotationsScanner()));
 		final Set<Class<?>> schedules = reflections.getTypesAnnotatedWith(ScheduleOnce.class);
 		if(!schedules.isEmpty()) Logger.debug("Scheduling actors once:");
 		for(final Class<?> scheduleOnce : schedules) {

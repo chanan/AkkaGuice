@@ -1,10 +1,10 @@
 name := "AkkaGuice"
 
-version := "0.8.1"
+version := "0.8.2-SNAPSHOT"
 
 libraryDependencies ++= Seq(
   "com.google.inject" % "guice" % "3.0",
-  "org.reflections" % "reflections" % "0.9.9-RC1"
+  "org.reflections" % "reflections" % "0.9.8"
 )
 
 publishTo <<= version { (v: String) =>

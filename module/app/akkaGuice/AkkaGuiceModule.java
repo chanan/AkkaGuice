@@ -1,7 +1,5 @@
 package akkaGuice;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.inject.Named;
 
@@ -22,21 +20,28 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Names;
 
 public class AkkaGuiceModule extends AbstractModule {
-	private final String[] namespaces;
-	
-	public AkkaGuiceModule(String... namespaces) {
-		super();
-		this.namespaces = namespaces;
-	}
-	
+    private final static List<String> ignore;
+
+    static {
+        ignore = new ArrayList<String>();
+        ignore.add("AbstractLoggingActor");
+        ignore.add("AbstractActorWithStash");
+        ignore.add("UntypedActorWithUnrestrictedStash");
+        ignore.add("AbstractActorWithUnrestrictedStash");
+        ignore.add("UntypedActorWithUnboundedStash");
+        ignore.add("UntypedActorWithStash");
+        ignore.add("AbstractActorWithUnboundedStash");
+    }
+
+
 	protected void configure() {
-		RegisterActors(binder(), namespaces);
+		RegisterActors(binder());
 	}
 	
-	private static void RegisterActors(Binder binder, String... namespaces) {
+	private static void RegisterActors(Binder binder) {
 		Logger.debug("Actor Scanner Started...");
 		final Map<String, ActorHolder> map = new HashMap<>();		
-		final ConfigurationBuilder configBuilder = build(namespaces);
+		final ConfigurationBuilder configBuilder = build();
 		final Reflections reflections = new Reflections(configBuilder.setScanners(new SubTypesScanner()));
 		final Set<Class<? extends UntypedActor>> actors = reflections.getSubTypesOf(UntypedActor.class);
         final Set<Class<? extends AbstractActor>> abstractActors = reflections.getSubTypesOf(AbstractActor.class);
@@ -59,6 +64,7 @@ public class AkkaGuiceModule extends AbstractModule {
 
     private static void loopOnAbstractActors(Map<String, ActorHolder> map, Set<Class<? extends AbstractActor>> actors) {
         for(final Class<? extends Actor> actor : actors) {
+            if(ignore.contains(actor.getSimpleName())) continue;
             final String named = getNamed(actor);
             final boolean isSingleton = isSingleton(actor);
             final ActorHolder actorHolder = new ActorHolder(actor, isSingleton);
@@ -77,6 +83,7 @@ public class AkkaGuiceModule extends AbstractModule {
 
     private static void loopOnActors(Map<String, ActorHolder> map, Set<Class<? extends UntypedActor>> actors) {
         for(final Class<? extends Actor> actor : actors) {
+            if(ignore.contains(actor.getSimpleName())) continue;
             final String named = getNamed(actor);
             final boolean isSingleton = isSingleton(actor);
             final ActorHolder actorHolder = new ActorHolder(actor, isSingleton);
@@ -103,11 +110,10 @@ public class AkkaGuiceModule extends AbstractModule {
         return actor.getAnnotation(Singleton.class) != null || actor.getAnnotation(javax.inject.Singleton.class) != null;
 	}
 
-	private static ConfigurationBuilder build(String... namespaces) {
-		final ConfigurationBuilder configBuilder = new ConfigurationBuilder();
-		for(final String namespace : namespaces) {
-			configBuilder.addUrls(ClasspathHelper.forPackage(namespace));
-		}
-		return configBuilder;
-	}
+    private static ConfigurationBuilder build() {
+        final ConfigurationBuilder configBuilder = new ConfigurationBuilder();
+        configBuilder.addClassLoaders(ClasspathHelper.classLoaders(AkkaGuicePlugin.getClassLoader()));
+        configBuilder.addUrls(ClasspathHelper.forClassLoader(AkkaGuicePlugin.getClassLoader()));
+        return configBuilder;
+    }
 }
