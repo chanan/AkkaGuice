@@ -1,6 +1,6 @@
 name := "AkkaGuice"
 
-version := "0.8.2-SNAPSHOT"
+version := "0.8.2"
 
 libraryDependencies ++= Seq(
   "com.google.inject" % "guice" % "3.0",
