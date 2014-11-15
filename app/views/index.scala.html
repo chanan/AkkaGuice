@@ -13,10 +13,16 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 <p>Add to your libraryDependencies:</p>
 
 <p><code><pre>
-"akkaguice" %% "akkaguice" % "0.8.1"
+"akkaguice" %% "akkaguice" % "0.8.2"
 </pre></code></p>
 
 <h2>Initialization</h2>
+
+<p>First, create or edit conf/play.plugins. Add the line (The number in front of the plugin is the load order inside your play app):</p>
+
+<p><code><pre>
+10000:akkaGuice.AkkaGuicePlugin
+</pre></code></p>
 
 <p>In Global.java create an Injector using AkkaGuiceModule with a list of your namespaces that will contain your actors. 
 You may also pass in your own GuiceModules, as in the example below. 
@@ -25,13 +31,17 @@ Next, in the onStart callback method pass the injector to AkkaGuice.InitializeIn
 
 <p><code><pre>
 public class Global extends GlobalSettings {
-	private final Injector injector = Guice.createInjector(new AkkaGuiceModule("services"), new GuiceModule());
-	
-	@@Override
-	public void onStart(Application application)
-	{
-		AkkaGuice.InitializeInjector(injector, "services");
-	}
+    private Injector injector;
+
+    public <A> A getControllerInstance(Class<A> clazz) throws Exception {
+        return injector.getInstance(clazz);
+    }
+
+    @@Override
+    public void onStart(Application arg0) {
+        injector = Guice.createInjector(new AkkaGuiceModule(), new GuiceModule());
+        AkkaGuice.InitializeInjector(injector);
+    }
 }
 </pre></code></p>
 
@@ -174,7 +184,7 @@ services.schedule.HelloOnceConfigActor.initialDelay = 5 seconds
 
 <h3>Enable via config</h3>
 
-<p>You can diable both types of scheduled actors via config:</p>
+<p>You can disable both types of scheduled actors via config:</p>
 
 <p><code><pre>
 services.schedule.NotEnabledActor.enabled = false
@@ -183,6 +193,7 @@ services.schedule.NotEnabledActor.enabled = false
 <h2>Release History</h2>
 
 <ul>
+<li>0.8.2 - Fixed an incompatibility with Ebean and changed the module to a plugin</li>
 <li>0.8.1 - Compatible with Java 7 and 8</li>
 <li>0.8.0 - Updated to support AbstractActor in Akka 2.3</li>
 <li>0.7.1 - Actors created with akka guice will get a name based on the key</li>

@@ -15,24 +15,34 @@ resolvers += "snapshot repository" at "http://chanan.github.io/maven-repo/snapsh
 Add to your libraryDependencies:
 
 ```java
-"akkaguice" %% "akkaguice" % "0.8.1"
+"akkaguice" %% "akkaguice" % "0.8.2"
 ```
 
 Initialization
 --------------
 
-In Global.java create an Injector using AkkaGuiceModule with a list of your namespaces that will contain your actors. You may also
+First, create or edit conf/play.plugins. Add the line (The number in front of the plugin is the load order inside your play app):
+
+```
+10000:akkaGuice.AkkaGuicePlugin
+```
+
+In Global.java create an Injector using AkkaGuiceModule. You may also
 pass in your own GuiceModules, as in the example below. 
-Next, in the onStart callback method pass the injector to AkkaGuice.InitializeInjector() and your namespace 
-(such as com.company.project - in this case I am using the "services" package):
+Next, in the onStart callback method pass the injector to AkkaGuice.InitializeInjector():
 
 ```java
 public class Global extends GlobalSettings {
-	private final Injector injector = Guice.createInjector(new AkkaGuiceModule("services"), new GuiceModule());
+	private Injector injector;
+
+	public <A> A getControllerInstance(Class<A> clazz) throws Exception {
+		return injector.getInstance(clazz);
+	}
 
 	@Override
 	public void onStart(Application arg0) {
-		AkkaGuice.InitializeInjector(injector, "services");
+        injector = Guice.createInjector(new AkkaGuiceModule(), new GuiceModule());
+		AkkaGuice.InitializeInjector(injector);
 	}
 }
 ```
@@ -42,7 +52,7 @@ Usage
 
 ### Registering Actors
 
-AkkaGuice will scan your code in the packages you set in the intialization above. This will make them available in Guice 
+AkkaGuice will scan your application code. This will make Actors available in Guice 
 to be injected into your controllers or services.
 
 ### Naming an Actor
@@ -178,7 +188,7 @@ services.schedule.HelloOnceConfigActor.initialDelay = 5 seconds
 
 ### Enable via config
 
-You can diable both types of scheduled actors via config:
+You can disable both types of scheduled actors via config:
 
 ```java
 services.schedule.NotEnabledActor.enabled = false
@@ -187,6 +197,7 @@ services.schedule.NotEnabledActor.enabled = false
 Release History
 ---------------
 
+* 0.8.2 - Fixed an incompatibility with Ebean and changed the module to a plugin
 * 0.8.1 - Compatible with Java 7 and 8
 * 0.8.0 - Updated to support AbstractActor in Akka 2.3
 * 0.7.1 - Actors created with akka guice will get a name based on the key

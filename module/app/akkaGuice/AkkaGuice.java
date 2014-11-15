@@ -11,7 +11,7 @@ public class AkkaGuice {
 	public static void InitializeInjector(Injector injector, String... namespaces) {
 		Logger.debug("Initialize Injector");
 		GuiceProvider.get(Akka.system()).initialize(injector);
-		ActorScanner.ScheduleActors(namespaces);
-		ActorScanner.ScheduleOnceActors(namespaces);
+		ActorScanner.ScheduleActors();
+		ActorScanner.ScheduleOnceActors();
 	}
 }
