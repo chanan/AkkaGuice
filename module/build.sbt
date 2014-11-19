@@ -1,6 +1,6 @@
 name := "AkkaGuice"
 
-version := "0.8.2"
+version := "0.8.3-SNAPSHOT"
 
 libraryDependencies ++= Seq(
   "com.google.inject" % "guice" % "3.0",
@@ -21,5 +21,3 @@ publishMavenStyle := true
 scalaVersion := "2.11.1"
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava)
-
-javacOptions ++= Seq("-source", "1.7", "-target", "1.7")

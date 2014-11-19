@@ -12,15 +12,19 @@ class ActorRefProvider implements Provider<ActorRef> {
 	private final Class<? extends Actor> actor;
     private final String key;
     private final Random rnd = new Random();
+    private final boolean singleton;
 	
 	public ActorRefProvider(Class<? extends Actor> actor, String key, boolean singleton) {
 		this.actor = actor;
-        if(singleton) this.key = key;
-        else this.key = key + "-" + Math.abs(rnd.nextLong());
+        this.key = key;
+        this.singleton = singleton;
+
 	}
 	
 	@Override
 	public ActorRef get() {
-		return Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(actor), key);
+        if(singleton) return Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(actor), key);
+        final String name = key + "-" + Math.abs(rnd.nextLong());
+        return Akka.system().actorOf(GuiceProvider.get(Akka.system()).props(actor), name);
 	}
 }
