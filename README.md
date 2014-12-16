@@ -197,6 +197,7 @@ services.schedule.NotEnabledActor.enabled = false
 Release History
 ---------------
 
+* 0.8.3 - Fixed issue with naming of PerRequest actors
 * 0.8.2 - Fixed an incompatibility with Ebean and changed the module to a plugin
 * 0.8.1 - Compatible with Java 7 and 8
 * 0.8.0 - Updated to support AbstractActor in Akka 2.3

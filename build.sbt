@@ -11,5 +11,3 @@ libraryDependencies ++= Seq(
 lazy val module = (project in file("module")).enablePlugins(PlayJava)
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava).aggregate(module).dependsOn(module)
-
-javacOptions ++= Seq("-source", "1.7", "-target", "1.7")
